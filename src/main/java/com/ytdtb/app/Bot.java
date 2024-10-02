@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -71,7 +72,8 @@ public class Bot extends TelegramLongPollingBot {
 
     int mode = -1;
     int COMMAND_START = 1;
-    int COMMAND_SAVE = 2;
+    int COMMAND_DOWNLOAD = 2;
+    int COMMAND_TEST = 3;
     @Override
     public void onUpdateReceived(Update update) {
         var msg = update.getMessage();
@@ -87,20 +89,25 @@ public class Bot extends TelegramLongPollingBot {
             log.log(Level.INFO, "Command: "+msg.getText());
 
             if(cmd.equals("/download")) {
-                mode = COMMAND_SAVE;
+                mode = COMMAND_DOWNLOAD;
                 String text = "Give me a link to the video";//, for example [link](https://www.youtube.com/watch?v=_CC2Uaxp2DU)";
                 sendText(id, text);
             } else if(cmd.equals("/start")) {
                 String text = "Welcome to the bot! Use /download command to start the download process";
                 sendText(id, text);
+            } else if(cmd.equals("/test")) {
+                mode = COMMAND_TEST;
+                String text_html = "<a href='https://www.google.com/'>Google</a>";
+                sendText(id, text_html, ParseMode.HTML);
+                String text_md = "[google](https://www.google.com/)";
+                sendText(id, text_md, ParseMode.MARKDOWN);
             } else {
-                sendText(id, "other command");
+                sendText(id, "unknown command");
             }
         } else {
-
             log.log(Level.INFO, "Text: " +msg.getText());
 
-            if (mode == COMMAND_SAVE) {
+            if (mode == COMMAND_DOWNLOAD) {
                 String link = msg.getText();
                 var youtube_id = getYoutubeId(link);
                 sendText(id, "Please wait...");
@@ -109,10 +116,10 @@ public class Bot extends TelegramLongPollingBot {
                     var code = downloadCommand(msg.getText());
                     if (code == 0) {
                         String new_link = serverUrl + youtube_id;
-                        String resultLink = "[video]("+new_link+")";
-                        sendText(id, resultLink);
+                        String resultLink = "["+youtube_id+"]("+new_link+")";
+                        sendText(id, resultLink, ParseMode.MARKDOWN);
                     } else {
-                        sendText(id, "error: "+code);
+                        sendText(id, "Error: "+code);
                     }
 
                 } catch (Exception e) {
@@ -165,10 +172,17 @@ public class Bot extends TelegramLongPollingBot {
         log.log(Level.INFO, "Code: "+exitCode);
 
         return exitCode;
+
     }
+
     public void sendText(Long who, String what){
+        sendText(who, what, null);
+    }
+
+    public void sendText(Long who, String what, String parseMode){
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString()) //Who are we sending a message to
+                .parseMode(parseMode)
                 .text(what).build();    //Message content
         try {
             execute(sm);                        //Actually sending the message
