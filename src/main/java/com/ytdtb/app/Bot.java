@@ -116,7 +116,7 @@ public class Bot extends TelegramLongPollingBot {
                     var code = downloadCommand(msg.getText());
                     if (code == 0) {
                         String new_link = serverUrl + youtube_id;
-                        String resultLink = "["+youtube_id+"]("+new_link+")";
+                        String resultLink = "Link to [video]("+new_link+")";
                         sendText(id, resultLink, ParseMode.MARKDOWN);
                     } else {
                         sendText(id, "Error: "+code);
