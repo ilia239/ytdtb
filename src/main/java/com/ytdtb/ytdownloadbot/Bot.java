@@ -79,8 +79,9 @@ public class Bot extends TelegramLongPollingBot {
 
     private String getYoutubeId(String link) {
         //https://youtu.be/WidNsNk8vGE?si=drepREIB3iK8tu-4
-        int lastId = link.lastIndexOf("v=");
-        String id = link.substring(lastId+2);
+        int lastSlash = link.lastIndexOf("/");
+        int qIndex = link.lastIndexOf("?");
+        String id = link.substring(lastSlash+1, qIndex);
         return id;
     }
 
