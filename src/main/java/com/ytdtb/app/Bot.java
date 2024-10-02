@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-
 public class Bot extends TelegramLongPollingBot {
 
     Logger log = Logger.getLogger(Bot.class.getName());
@@ -41,6 +40,8 @@ public class Bot extends TelegramLongPollingBot {
 
     @Value( "${firefox.session}" )
     public String firefoxSession;
+
+    public String lastYouTubeId;
 
     @EventListener(ApplicationReadyEvent.class)
     public void startBot() throws TelegramApiException {
@@ -73,7 +74,8 @@ public class Bot extends TelegramLongPollingBot {
     int mode = -1;
     int COMMAND_START = 1;
     int COMMAND_DOWNLOAD = 2;
-    int COMMAND_TEST = 3;
+    int COMMAND_LAST = 3;
+    int COMMAND_TEST = 4;
     @Override
     public void onUpdateReceived(Update update) {
         var msg = update.getMessage();
@@ -95,6 +97,11 @@ public class Bot extends TelegramLongPollingBot {
             } else if(cmd.equals("/start")) {
                 String text = "Welcome to the bot! Use /download command to start the download process";
                 sendText(id, text);
+            } else if(cmd.equals("/last")) {
+                if (lastYouTubeId!=null) {
+                    String last_link = serverUrl + "/last";
+                    sendText(id, "Link to the last video: ["+last_link+"]");
+                }
             } else if(cmd.equals("/test")) {
                 mode = COMMAND_TEST;
                 String text_html = "<a href='https://www.google.com/'>Google</a>";
@@ -125,6 +132,8 @@ public class Bot extends TelegramLongPollingBot {
 //                        sendText(id, "("+new_link+")");
                         sendText(id, "Enjoy: ["+v_link+"]");
                         sendText(id, "Download: ["+dl_link+"]");
+
+                        lastYouTubeId = youtube_id;
 //                        sendText(id, "<"+new_link+">");
 
 
