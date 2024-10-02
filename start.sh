@@ -8,5 +8,9 @@
 # Short-Description: Halts USB power...
 ### END INIT INFO
 
+cd ~/ytdtb
+git pull
+./mvnw clean install -DskipTests
+
 /home/ilia/.sdkman/candidates/java/current/bin/java -jar ~/ytdtb/target/ytdownloadbot-0.0.1-SNAPSHOT.jar
 
