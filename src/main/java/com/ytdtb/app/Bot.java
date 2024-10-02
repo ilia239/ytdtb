@@ -127,12 +127,12 @@ public class Bot extends TelegramLongPollingBot {
 
 
                     } else {
-                        sendText(id, "Error: "+code);
+                        sendText(id, "Cannot download this link!");
                     }
 
                 } catch (Exception e) {
                     log.log(Level.INFO, "Error", e);
-                    sendText(id, "error");
+                    sendText(id, "Cannot download this link!");
                 }
             }
         }
