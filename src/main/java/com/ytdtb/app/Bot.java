@@ -90,7 +90,7 @@ public class Bot extends TelegramLongPollingBot {
             String cmd = msg.getText();
             log.log(Level.INFO, "Command: "+msg.getText());
 
-            if(cmd.equals("/download")) {
+            if(cmd.equals("/dl")) {
                 mode = COMMAND_DOWNLOAD;
                 String text = "Give me a link to the video";//, for example [link](https://www.youtube.com/watch?v=_CC2Uaxp2DU)";
                 sendText(id, text);
