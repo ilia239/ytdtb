@@ -39,17 +39,25 @@ public class Bot extends TelegramLongPollingBot {
         if(msg.isCommand()){
             if(msg.getText().equals("/save")) {
                 mode = MODE_SAVE;
-                sendText(id, "save command");
+                String link = "http://localhost:8080/data/WidNsNk8vGE";
+                String formatted = "[inline URL]("+link+")";
+
+                sendText(id, formatted);
             }
             else {
                 sendText(id, "other command");
             }
         } else {
             if (mode == MODE_SAVE) {
+                String link = msg.getText();
+                var youtube_id = getYoutubeId(link);
+                String new_link ="http://135.181.101.239:8080/data/"+youtube_id;
+                String test = "[inline URL]("+new_link+")";
+                sendText(id, test);
+
                 try {
-                    var code = downloadCommand(msg.getText());
-                    String formatted = "[inline URL]("+code+")";
-                    sendText(id, code);
+                    var resp_msg = downloadCommand(msg.getText());
+                    sendText(id, resp_msg);
                 } catch (Exception e) {
                     sendText(id, "error");
                     System.out.println(e);
@@ -76,12 +84,16 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-
-
     private String getYoutubeId(String link) {
         //https://youtu.be/WidNsNk8vGE?si=drepREIB3iK8tu-4
+        System.out.println(link);
         int lastSlash = link.lastIndexOf("/");
+        System.out.println(lastSlash);
         int qIndex = link.lastIndexOf("?");
+        if (qIndex == -1) {
+            qIndex = link.length();
+        }
+        System.out.println(qIndex);
         String id = link.substring(lastSlash+1, qIndex);
         return id;
     }
