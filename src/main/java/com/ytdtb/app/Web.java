@@ -36,7 +36,7 @@ public class Web {
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        response.setContentType("video/mp4");
         response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         return new FileSystemResource(new File(dataDirectory + youtubeId+".mp4"));
     }
