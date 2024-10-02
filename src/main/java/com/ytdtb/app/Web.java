@@ -47,8 +47,19 @@ public class Web {
         return new FileSystemResource(file);
     }
 
-    @RequestMapping(value = "/last", method = RequestMethod.GET)
-    public FileSystemResource getLastContentDisposition(HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/lv", method = RequestMethod.GET)
+    public FileSystemResource getLastV(HttpServletResponse response) throws IOException {
+
+        String filename = bot.lastYouTubeId+".mp4";
+        File file = new File(dataDirectory + filename);
+
+        HttpHeaders headers = new HttpHeaders();
+        response.setContentType("video/mp4");
+        return new FileSystemResource(file);
+    }
+
+    @RequestMapping(value = "/ldl", method = RequestMethod.GET)
+    public FileSystemResource getLastDl(HttpServletResponse response) throws IOException {
 
         String filename = bot.lastYouTubeId+".mp4";
         File file = new File(dataDirectory + filename);

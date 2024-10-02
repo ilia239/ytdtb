@@ -99,8 +99,10 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(id, text);
             } else if(cmd.equals("/last")) {
                 if (lastYouTubeId!=null) {
-                    String last_link = serverUrl + "/last";
-                    sendText(id, "Link to the last video: ["+last_link+"]");
+                    String last_vlink = serverUrl + "/lv";
+                    String last_dllink = serverUrl + "/ldl";
+                    sendText(id, "View Last: ["+last_vlink+"]");
+                    sendText(id, "Download Last: ["+last_dllink+"]");
                 }
             } else if(cmd.equals("/test")) {
                 mode = COMMAND_TEST;
