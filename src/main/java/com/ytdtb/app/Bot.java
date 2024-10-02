@@ -1,9 +1,15 @@
-package com.ytdtb.ytdownloadbot;
+package com.ytdtb.app;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,20 +17,55 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@Component
 
 public class Bot extends TelegramLongPollingBot {
+
+    Logger log = Logger.getLogger(Bot.class.getName());
+
+    @Value( "${bot.username}" )
+    public String botUsername;
+
+    @Value( "${bot.token}" )
+    public String botToken;
+
+    @Value( "${server.url}" )
+    public String serverUrl;
+
+    @Value( "${ytdlp.path}" )
+    public String ytdlpPath;
+
+    @Value( "${firefox.session}" )
+    public String firefoxSession;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void startBot() throws TelegramApiException {
+        log.log(Level.INFO, "BOT_USERNAME: "+ this.botUsername);
+        log.log(Level.INFO, "FIREFOX_SESSION: "+ this.firefoxSession);
+        log.log(Level.INFO, "SERVER_URL: "+ this.serverUrl);
+        log.log(Level.INFO, "YTDLP_PATH: "+ this.ytdlpPath);
+
+        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+        botsApi.registerBot(this);
+        log.log(Level.INFO, "Bot started");
+
+    }
+
 
     ExecutorService executorService =
             new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>());
 
     public String getBotUsername() {
-        return "ytdtbot-name";
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return "7611440251:AAH9Axd6G7EtKu4X3qgUit7i9olU0X9dcTk";
+        return botToken;
     }
 
 
@@ -37,18 +78,28 @@ public class Bot extends TelegramLongPollingBot {
         var user = msg.getFrom();
         var id = user.getId();
 
+        log.log(Level.INFO, "User ID: " +id);
+        log.log(Level.INFO, "User: "+user);
+
         if(msg.isCommand()){
-            if(msg.getText().equals("/download")) {
+
+            String cmd = msg.getText();
+            log.log(Level.INFO, "Command: "+msg.getText());
+
+            if(cmd.equals("/download")) {
                 mode = COMMAND_SAVE;
                 String text = "Give me a link to the video";//, for example [link](https://www.youtube.com/watch?v=_CC2Uaxp2DU)";
                 sendText(id, text);
-            } else if(msg.getText().equals("/start")) {
+            } else if(cmd.equals("/start")) {
                 String text = "Welcome to the bot! Use /download command to start the download process";
                 sendText(id, text);
             } else {
                 sendText(id, "other command");
             }
         } else {
+
+            log.log(Level.INFO, "Text: " +msg.getText());
+
             if (mode == COMMAND_SAVE) {
                 String link = msg.getText();
                 var youtube_id = getYoutubeId(link);
@@ -56,9 +107,8 @@ public class Bot extends TelegramLongPollingBot {
 
                 try {
                     var code = downloadCommand(msg.getText());
-                    System.out.println("code"+code);
                     if (code == 0) {
-                        String new_link ="http://135.181.101.239:8080/data/"+youtube_id;
+                        String new_link = serverUrl + youtube_id;
                         String resultLink = "[video]("+new_link+")";
                         sendText(id, resultLink);
                     } else {
@@ -66,8 +116,8 @@ public class Bot extends TelegramLongPollingBot {
                     }
 
                 } catch (Exception e) {
+                    log.log(Level.INFO, "Error", e);
                     sendText(id, "error");
-                    System.out.println(e);
                 }
             }
         }
@@ -92,30 +142,27 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private String getYoutubeId(String link) {
-        //https://youtu.be/WidNsNk8vGE?si=drepREIB3iK8tu-4
-        System.out.println(link);
         int lastSlash = link.lastIndexOf("/");
-        System.out.println(lastSlash);
         int qIndex = link.lastIndexOf("?");
         if (qIndex == -1) {
             qIndex = link.length();
         }
-        System.out.println(qIndex);
         String id = link.substring(lastSlash+1, qIndex);
         return id;
     }
 
     private int downloadCommand(String link) throws InterruptedException, IOException {
-        String cmd = "/home/ilia/yt-dlp/yt-dlp --cookies-from-browser firefox:7iezo0zo.default "+link;
-        System.out.println("Command: "+cmd);
+        String cmd = ytdlpPath + " --cookies-from-browser firefox:"+firefoxSession+" "+link;
+        log.log(Level.INFO, "Invoking :" + cmd);
         Process process;
             process = Runtime.getRuntime()
-                    .exec(String.format(cmd));//"/bin/sh -c ls %s", homeDirectory));
+                    .exec(String.format(cmd));
         StreamGobbler streamGobbler =
                 new StreamGobbler(process.getInputStream(), System.out::println);
         Future<?> future = executorService.submit(streamGobbler);
 
         int exitCode = process.waitFor();
+        log.log(Level.INFO, "Code: "+exitCode);
 
         return exitCode;
     }
