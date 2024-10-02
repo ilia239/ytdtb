@@ -22,7 +22,7 @@ public class Web {
     @Value( "${data.dir}" )
     public String dataDirectory;
 
-    @RequestMapping(value = "/data1/{youtube_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET)
     @ResponseBody
     public FileSystemResource getData(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
         log.log(Level.INFO, "getData: "+ youtubeId);
@@ -31,8 +31,8 @@ public class Web {
     }
 
 
-    @RequestMapping(value = "/data/{youtube_id}", method = RequestMethod.GET)
-    public FileSystemResource doAction(@PathVariable("youtube_id")String youtubeId, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/dl/{youtube_id}", method = RequestMethod.GET)
+    public FileSystemResource getContentDisposition(@PathVariable("youtube_id")String youtubeId, HttpServletResponse response) throws IOException {
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
         HttpHeaders headers = new HttpHeaders();
