@@ -8,5 +8,5 @@
 # Short-Description: Halts USB power...
 ### END INIT INFO
 
-java -jar ~/ytdtb/target/ytdownloadbot-0.0.1-SNAPSHOT.jar
+/home/ilia/.sdkman/candidates/java/current/bin/java -jar ~/ytdtb/target/ytdownloadbot-0.0.1-SNAPSHOT.jar
 
