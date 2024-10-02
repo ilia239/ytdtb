@@ -51,13 +51,19 @@ public class Bot extends TelegramLongPollingBot {
             if (mode == MODE_SAVE) {
                 String link = msg.getText();
                 var youtube_id = getYoutubeId(link);
-                String new_link ="http://135.181.101.239:8080/data/"+youtube_id;
-                String test = "[inline URL]("+new_link+")";
-                sendText(id, test);
+                sendText(id, "Please wait...");
 
                 try {
-                    var resp_msg = downloadCommand(msg.getText());
-                    sendText(id, resp_msg);
+                    var code = downloadCommand(msg.getText());
+                    System.out.println("code"+code);
+                    if (code == 0) {
+                        String new_link ="http://135.181.101.239:8080/data/"+youtube_id;
+                        String resultLink = "[video]("+new_link+")";
+                        sendText(id, resultLink);
+                    } else {
+                        sendText(id, "error: "+code);
+                    }
+
                 } catch (Exception e) {
                     sendText(id, "error");
                     System.out.println(e);
@@ -98,7 +104,7 @@ public class Bot extends TelegramLongPollingBot {
         return id;
     }
 
-    private String downloadCommand(String link) throws InterruptedException, IOException {
+    private int downloadCommand(String link) throws InterruptedException, IOException {
         String cmd = "/home/ilia/yt-dlp/yt-dlp --cookies-from-browser firefox:7iezo0zo.default "+link;
         System.out.println("Command: "+cmd);
         Process process;
@@ -110,9 +116,7 @@ public class Bot extends TelegramLongPollingBot {
 
         int exitCode = process.waitFor();
 
-        var id = getYoutubeId(link);
-        String returnUrl ="http://135.181.101.239:8080/data/"+id;
-        return id;
+        return exitCode;
     }
     public void sendText(Long who, String what){
         SendMessage sm = SendMessage.builder()
