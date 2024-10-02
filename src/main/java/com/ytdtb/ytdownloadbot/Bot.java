@@ -29,7 +29,8 @@ public class Bot extends TelegramLongPollingBot {
 
 
     int mode = -1;
-    int MODE_SAVE = 1;
+    int COMMAND_START = 1;
+    int COMMAND_SAVE = 2;
     @Override
     public void onUpdateReceived(Update update) {
         var msg = update.getMessage();
@@ -37,18 +38,18 @@ public class Bot extends TelegramLongPollingBot {
         var id = user.getId();
 
         if(msg.isCommand()){
-            if(msg.getText().equals("/save")) {
-                mode = MODE_SAVE;
-                String link = "http://localhost:8080/data/WidNsNk8vGE";
-                String formatted = "[inline URL]("+link+")";
-
-                sendText(id, formatted);
-            }
-            else {
+            if(msg.getText().equals("/download")) {
+                mode = COMMAND_SAVE;
+                String text = "Give me a link to the video, for example [link](https://www.youtube.com/watch?v=_CC2Uaxp2DU)";
+                sendText(id, text);
+            } else if(msg.getText().equals("/start")) {
+                String text = "Welcome to the bot! Use /download command to start the download process";
+                sendText(id, text);
+            } else {
                 sendText(id, "other command");
             }
         } else {
-            if (mode == MODE_SAVE) {
+            if (mode == COMMAND_SAVE) {
                 String link = msg.getText();
                 var youtube_id = getYoutubeId(link);
                 sendText(id, "Please wait...");
