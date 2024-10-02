@@ -48,7 +48,8 @@ public class Bot extends TelegramLongPollingBot {
             if (mode == MODE_SAVE) {
                 try {
                     var code = downloadCommand(msg.getText());
-                    sendText(id, "code: "+code);
+                    String formatted = "[inline URL]("+code+")";
+                    sendText(id, code);
                 } catch (Exception e) {
                     sendText(id, "error");
                     System.out.println(e);
@@ -99,7 +100,7 @@ public class Bot extends TelegramLongPollingBot {
 
         var id = getYoutubeId(link);
         String returnUrl ="http://135.181.101.239:8080/data/"+id;
-        return exitCode+" : "+id;
+        return id;
     }
     public void sendText(Long who, String what){
         SendMessage sm = SendMessage.builder()
