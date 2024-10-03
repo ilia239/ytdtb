@@ -80,15 +80,11 @@ public class Bot extends TelegramLongPollingBot {
         var msg = update.getMessage();
         var user = msg.getFrom();
         var id = user.getId();
-
-        log.info("User ID: " +id);
         log.debug("User: "+user);
+        log.info( "UserID: " +id+ " : "+msg.getText());
 
         if(msg.isCommand()){
-
             String cmd = msg.getText();
-            log.debug( "Command: "+msg.getText());
-
             if(cmd.equals("/dl")) {
                 mode = COMMAND_DOWNLOAD;
                 String text = "Give me a link to the video";//, for example [link](https://www.youtube.com/watch?v=_CC2Uaxp2DU)";
@@ -113,8 +109,6 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(id, "unknown command");
             }
         } else {
-            log.info("Text: " +msg.getText());
-
             if (mode == COMMAND_DOWNLOAD) {
                 String link = msg.getText();
                 var youtube_id = getYoutubeId(link);
