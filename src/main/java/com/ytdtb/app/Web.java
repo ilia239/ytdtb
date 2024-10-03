@@ -1,25 +1,23 @@
 package com.ytdtb.app;
 
 import jakarta.servlet.http.HttpServletResponse;
-import javassist.bytecode.SignatureAttribute;
+import org.apache.logging.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @RestController
 public class Web {
-    Logger log = Logger.getLogger(Web.class.getName());
+//    Logger log = Logger.getLogger(Web.class.getName());
 
+    Logger log = LoggerFactory.getLogger(Web.class);
 
     @Autowired
     Bot bot;
