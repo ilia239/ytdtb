@@ -33,7 +33,6 @@ public class Web {
         log.log(Level.INFO, "getData: "+ youtubeId);
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
-        response.setHeader("Content-Type", "video/mp4");
         response.setContentType("video/mp4");
         return new FileSystemResource(file);
     }
@@ -44,7 +43,6 @@ public class Web {
         File file = new File(dataDirectory + filename);
         HttpHeaders headers = new HttpHeaders();
         response.setContentType("video/mp4");
-        response.setHeader("Content-Type", "video/mp4");
         response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         return new FileSystemResource(file);
     }
@@ -57,7 +55,6 @@ public class Web {
 
         HttpHeaders headers = new HttpHeaders();
         response.setContentType("video/mp4");
-        response.setHeader("Content-Type", "video/mp4");
         return new FileSystemResource(file);
     }
 
@@ -69,7 +66,6 @@ public class Web {
 
         HttpHeaders headers = new HttpHeaders();
         response.setContentType("video/mp4");
-        response.setHeader("Content-Type", "video/mp4");
         response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         return new FileSystemResource(file);
     }
