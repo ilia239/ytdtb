@@ -6,4 +6,5 @@
     <root level="INFO">
         <appender-ref ref="FILE" />
     </root>
+    <logger name="com.ytdtb.app" level="DEBUG"/>
 </configuration>
