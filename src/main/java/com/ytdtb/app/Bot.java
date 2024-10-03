@@ -82,12 +82,12 @@ public class Bot extends TelegramLongPollingBot {
         var id = user.getId();
 
         log.info("User ID: " +id);
-        log.info("User: "+user);
+        log.debug("User: "+user);
 
         if(msg.isCommand()){
 
             String cmd = msg.getText();
-            log.info( "Command: "+msg.getText());
+            log.debug( "Command: "+msg.getText());
 
             if(cmd.equals("/dl")) {
                 mode = COMMAND_DOWNLOAD;
