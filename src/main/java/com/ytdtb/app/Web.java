@@ -26,7 +26,6 @@ public class Web {
     @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
     @ResponseBody
     public FileSystemResource getV(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
-        log.info("getV: "+ youtubeId);
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
         return new FileSystemResource(file);
