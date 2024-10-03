@@ -169,7 +169,47 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    // type A https://youtu.be/h6xKD_36iAM
+    // type B https://youtu.be/h6xKD_36iAM?si=q9dodeJReQdEhIr2
+    // type C https://www.youtube.com/watch?v=RVR43i9DMHs
+
+
+
+    public final static int YOUTUBEID_TYPE_A = 1;
+    public final static int YOUTUBEID_TYPE_C = 3;
+
     private String getYoutubeId(String link) {
+        int t = getYoutubeId_Type(link);
+        switch (t){
+         case YOUTUBEID_TYPE_A:
+             return getYoutubeId_TypeA(link);
+        case YOUTUBEID_TYPE_C:
+            return getYoutubeId_TypeC(link);
+        default:
+            throw new RuntimeException("Unexpected link: "+link);
+        }
+    }
+
+    private int getYoutubeId_Type(String link) {
+        int idxA = link.lastIndexOf("youtu.be/");
+        if (idxA != -1) {
+            return YOUTUBEID_TYPE_A;
+        }
+        int idxC = link.lastIndexOf("/watch?v=");
+        if (idxC != -1) {
+            return YOUTUBEID_TYPE_C;
+        }
+        return YOUTUBEID_TYPE_A;
+    }
+
+    public static void main(String[] p) {
+        Bot b = new Bot();
+        System.out.println( b.getYoutubeId("https://youtu.be/h6xKD_36iAM"));
+        System.out.println( b.getYoutubeId("https://www.youtube.com/watch?v=RVR43i9DMHs"));
+    }
+
+    private String getYoutubeId_TypeA(String link) {
+        // type A https://youtu.be/h6xKD_36iAM
         int lastSlash = link.lastIndexOf("/");
         int qIndex = link.lastIndexOf("?");
         if (qIndex == -1) {
@@ -178,6 +218,19 @@ public class Bot extends TelegramLongPollingBot {
         String id = link.substring(lastSlash+1, qIndex);
         return id;
     }
+
+    private String getYoutubeId_TypeC(String link) {
+        // type C https://www.youtube.com/watch?v=RVR43i9DMHs
+
+        int idxV = link.lastIndexOf("/watch?v=");
+        int pIndex = link.lastIndexOf("&");
+        if (pIndex == -1) {
+            pIndex = link.length();
+        }
+        String id = link.substring(idxV+9, pIndex);
+        return id;
+    }
+
 
     private int downloadCommand(String link) throws InterruptedException, IOException {
         String cmd = ytdlpPath + " --cookies-from-browser firefox:"+firefoxSession+" "+link;
