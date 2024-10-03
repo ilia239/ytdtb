@@ -180,6 +180,8 @@ public class Bot extends TelegramLongPollingBot {
 
     private String getYoutubeId(String link) {
         int t = getYoutubeId_Type(link);
+        log.log(Level.FINER, "link :" + link);
+        log.log(Level.FINER, "type :" + t);
         switch (t){
          case YOUTUBEID_TYPE_A:
              return getYoutubeId_TypeA(link);

@@ -29,44 +29,29 @@ public class Web {
 
     @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
     @ResponseBody
-    public FileSystemResource getData(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
+    public FileSystemResource getV(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
         log.log(Level.INFO, "getData: "+ youtubeId);
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
-//        response.setContentType("video/mp4");
-        return new FileSystemResource(file);
-    }
-
-    @RequestMapping(value = "/dl/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
-    public FileSystemResource getContentDisposition(@PathVariable("youtube_id")String youtubeId, HttpServletResponse response) throws IOException {
-        String filename = youtubeId+".mp4";
-        File file = new File(dataDirectory + filename);
-        HttpHeaders headers = new HttpHeaders();
-//        response.setContentType("video/mp4");
-        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         return new FileSystemResource(file);
     }
 
     @RequestMapping(value = "/lv", method = RequestMethod.GET, produces = {"video/mp4"})
     public FileSystemResource getLastV(HttpServletResponse response) throws IOException {
+        return getV(bot.lastYouTubeId, response);
+    }
 
-        String filename = bot.lastYouTubeId+".mp4";
+    @RequestMapping(value = "/dl/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
+    public FileSystemResource getDl(@PathVariable("youtube_id")String youtubeId, HttpServletResponse response) {
+        String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
-
         HttpHeaders headers = new HttpHeaders();
-//        response.setContentType("video/mp4");
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         return new FileSystemResource(file);
     }
 
     @RequestMapping(value = "/ldl", method = RequestMethod.GET, produces = {"video/mp4"})
     public FileSystemResource getLastDl(HttpServletResponse response) throws IOException {
-
-        String filename = bot.lastYouTubeId+".mp4";
-        File file = new File(dataDirectory + filename);
-
-        HttpHeaders headers = new HttpHeaders();
-//        response.setContentType("video/mp4");
-        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-        return new FileSystemResource(file);
+        return getDl(bot.lastYouTubeId, response);
     }
 }
