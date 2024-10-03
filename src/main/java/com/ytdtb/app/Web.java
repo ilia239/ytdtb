@@ -27,7 +27,7 @@ public class Web {
     @Value( "${data.dir}" )
     public String dataDirectory;
 
-    @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
     @ResponseBody
     public FileSystemResource getData(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
         log.log(Level.INFO, "getData: "+ youtubeId);
@@ -38,7 +38,7 @@ public class Web {
         return new FileSystemResource(file);
     }
 
-    @RequestMapping(value = "/dl/{youtube_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/dl/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
     public FileSystemResource getContentDisposition(@PathVariable("youtube_id")String youtubeId, HttpServletResponse response) throws IOException {
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
@@ -49,7 +49,7 @@ public class Web {
         return new FileSystemResource(file);
     }
 
-    @RequestMapping(value = "/lv", method = RequestMethod.GET)
+    @RequestMapping(value = "/lv", method = RequestMethod.GET, produces = {"video/mp4"})
     public FileSystemResource getLastV(HttpServletResponse response) throws IOException {
 
         String filename = bot.lastYouTubeId+".mp4";
@@ -61,7 +61,7 @@ public class Web {
         return new FileSystemResource(file);
     }
 
-    @RequestMapping(value = "/ldl", method = RequestMethod.GET)
+    @RequestMapping(value = "/ldl", method = RequestMethod.GET, produces = {"video/mp4"})
     public FileSystemResource getLastDl(HttpServletResponse response) throws IOException {
 
         String filename = bot.lastYouTubeId+".mp4";
