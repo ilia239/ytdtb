@@ -109,30 +109,39 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(id, "unknown command");
             }
         } else {
-            String link = msg.getText();
-            var youtube_id = getYoutubeId(link);
-            sendText(id, "Please wait...");
+            if (mode == COMMAND_DOWNLOAD) {
+                String link = msg.getText();
+                var youtube_id = getYoutubeId(link);
+                sendText(id, "Please wait...");
 
-            try {
-                var code = downloadCommand(msg.getText());
-                if (code == 0) {
-                    String v_link = serverUrl + "/v/"+ youtube_id;
-                    String dl_link = serverUrl + "/dl/"+ youtube_id;
-                    sendText(id, "Enjoy: ["+v_link+"]");
-                    sendText(id, "Download: ["+dl_link+"]");
+                try {
+                    var code = downloadCommand(msg.getText());
+                    if (code == 0) {
+                        String v_link = serverUrl + "/v/"+ youtube_id;
+                        String dl_link = serverUrl + "/dl/"+ youtube_id;
+//                        sendText(id, "Click [HERE]("+new_link+") to see video", ParseMode.MARKDOWN);
+//                        sendText(id, "Link to [video]("+new_link+") is here", ParseMode.MARKDOWNV2);
+//                        sendText(id, "<a href=\""+new_link+ "\">CLICK HERE TO SEE VIDEO</a>", ParseMode.HTML);
+//                        sendText(id, "<a href=\""+new_link+ "\">CLICK HERE TO SEE VIDEO</a>");
+//                        sendText(id, "Link to [video]("+new_link+") is here");
+//                        sendText(id, "("+new_link+")");
+                        sendText(id, "Enjoy: ["+v_link+"]");
+                        sendText(id, "Download: ["+dl_link+"]");
 
-                    lastYouTubeId = youtube_id;
+                        lastYouTubeId = youtube_id;
+//                        sendText(id, "<"+new_link+">");
 
-                } else {
+
+                    } else {
+                        sendText(id, "Cannot download this link!");
+                    }
+
+                } catch (Exception e) {
+                    log.error("Error", e);
                     sendText(id, "Cannot download this link!");
                 }
-
-            } catch (Exception e) {
-                log.error("Error", e);
-                sendText(id, "Cannot download this link!");
             }
         }
-
     }
 
 
