@@ -15,8 +15,6 @@ import java.io.IOException;
 
 @RestController
 public class Web {
-//    Logger log = Logger.getLogger(Web.class.getName());
-
     Logger log = LoggerFactory.getLogger(Web.class);
 
     @Autowired
@@ -28,7 +26,7 @@ public class Web {
     @RequestMapping(value = "/v/{youtube_id}", method = RequestMethod.GET, produces = {"video/mp4"})
     @ResponseBody
     public FileSystemResource getV(@PathVariable("youtube_id") String youtubeId, HttpServletResponse response) {
-        log.log(Level.INFO, "getData: "+ youtubeId);
+        log.info("getV: "+ youtubeId);
         String filename = youtubeId+".mp4";
         File file = new File(dataDirectory + filename);
         return new FileSystemResource(file);

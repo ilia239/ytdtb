@@ -1,5 +1,7 @@
 package com.ytdtb.app;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -18,13 +20,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 @Component
 public class Bot extends TelegramLongPollingBot {
 
-    Logger log = Logger.getLogger(Bot.class.getName());
+    Logger log = LoggerFactory.getLogger(Bot.class);
 
     @Value( "${bot.username}" )
     public String botUsername;
@@ -45,14 +44,14 @@ public class Bot extends TelegramLongPollingBot {
 
     @EventListener(ApplicationReadyEvent.class)
     public void startBot() throws TelegramApiException {
-        log.log(Level.INFO, "BOT_USERNAME: "+ this.botUsername);
-        log.log(Level.INFO, "FIREFOX_SESSION: "+ this.firefoxSession);
-        log.log(Level.INFO, "SERVER_URL: "+ this.serverUrl);
-        log.log(Level.INFO, "YTDLP_PATH: "+ this.ytdlpPath);
+        log.info("BOT_USERNAME: "+ this.botUsername);
+        log.info("FIREFOX_SESSION: "+ this.firefoxSession);
+        log.info("SERVER_URL: "+ this.serverUrl);
+        log.info("YTDLP_PATH: "+ this.ytdlpPath);
 
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         botsApi.registerBot(this);
-        log.log(Level.INFO, "Bot started");
+        log.info("Bot started");
 
     }
 
@@ -82,13 +81,13 @@ public class Bot extends TelegramLongPollingBot {
         var user = msg.getFrom();
         var id = user.getId();
 
-        log.log(Level.INFO, "User ID: " +id);
-        log.log(Level.INFO, "User: "+user);
+        log.info("User ID: " +id);
+        log.info("User: "+user);
 
         if(msg.isCommand()){
 
             String cmd = msg.getText();
-            log.log(Level.INFO, "Command: "+msg.getText());
+            log.info( "Command: "+msg.getText());
 
             if(cmd.equals("/dl")) {
                 mode = COMMAND_DOWNLOAD;
@@ -114,7 +113,7 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(id, "unknown command");
             }
         } else {
-            log.log(Level.INFO, "Text: " +msg.getText());
+            log.info("Text: " +msg.getText());
 
             if (mode == COMMAND_DOWNLOAD) {
                 String link = msg.getText();
@@ -144,7 +143,7 @@ public class Bot extends TelegramLongPollingBot {
                     }
 
                 } catch (Exception e) {
-                    log.log(Level.INFO, "Error", e);
+                    log.error("Error", e);
                     sendText(id, "Cannot download this link!");
                 }
             }
@@ -180,8 +179,8 @@ public class Bot extends TelegramLongPollingBot {
 
     private String getYoutubeId(String link) {
         int t = getYoutubeId_Type(link);
-        log.log(Level.FINER, "link :" + link);
-        log.log(Level.FINER, "type :" + t);
+        log.debug("link :" + link);
+        log.debug("type :" + t);
         switch (t){
          case YOUTUBEID_TYPE_A:
              return getYoutubeId_TypeA(link);
@@ -236,7 +235,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private int downloadCommand(String link) throws InterruptedException, IOException {
         String cmd = ytdlpPath + " --cookies-from-browser firefox:"+firefoxSession+" "+link;
-        log.log(Level.INFO, "Invoking :" + cmd);
+        log.debug("Invoking :" + cmd);
         Process process;
             process = Runtime.getRuntime()
                     .exec(String.format(cmd));
@@ -245,7 +244,7 @@ public class Bot extends TelegramLongPollingBot {
         Future<?> future = executorService.submit(streamGobbler);
 
         int exitCode = process.waitFor();
-        log.log(Level.INFO, "Code: "+exitCode);
+        log.debug("Code: "+exitCode);
 
         return exitCode;
 
