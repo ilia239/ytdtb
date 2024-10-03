@@ -15,5 +15,5 @@ cd $HOME/ytdtb
 git pull
 ./mvnw clean install -DskipTests
 
-$JAVA_HOME/bin/java -jar ~/ytdtb/target/ytdtb-0.0.1-SNAPSHOT.jar
+$JAVA_HOME/bin/java -jar ~/ytdtb/target/ytdtb-0.0.1-SNAPSHOT.jar --spring.config.location=file:$HOME/ytdtb/local/application.properties
 
